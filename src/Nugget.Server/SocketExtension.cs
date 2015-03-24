@@ -154,19 +154,24 @@ namespace Nugget.Server
         private static void ReceiveCallback(IAsyncResult ar)
         {
             var state = (State)ar.AsyncState;
-            var count = state.Socket.EndReceive(ar);
-            if (state.Callback != null)
+            try
             {
-                if (state.UserDefinedState != null)
+                var count = state.Socket.EndReceive(ar);
+                if (state.Callback != null)
                 {
-                    state.Callback.BeginInvoke(count, state.UserDefinedState, new AsyncCallback(ReceiveCallbackCallback), state);
+                    if (state.UserDefinedState != null)
+                    {
+                        state.Callback.BeginInvoke(count, state.UserDefinedState, new AsyncCallback(ReceiveCallbackCallback), state);
+                    }
+                    else
+                    {
+                        state.Callback.BeginInvoke(count, new AsyncCallback(ReceiveCallbackCallback), state);
+                    }
+
                 }
-                else
-                {
-                    state.Callback.BeginInvoke(count, new AsyncCallback(ReceiveCallbackCallback), state);
-                }
-                
             }
+            catch(Exception ex)
+            { }
         }
 
         private static void ReceiveCallbackCallback(IAsyncResult ar)

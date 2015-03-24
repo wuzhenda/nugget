@@ -44,7 +44,7 @@ namespace Nugget.Server
             if (Socket.Connected)
             {
                 var bytes = Encoding.UTF8.GetBytes(data);
-                var fragment = DataFragment.Create(bytes, DataFragment.FragmentHead.Fin, DataFragment.FragmentOpcode.Text, true);
+                var fragment = DataFragment.Create(bytes, DataFragment.FragmentHead.Fin, DataFragment.FragmentOpcode.Text, false);
                 Socket.AsyncSend(fragment.GetBytes(), (byteCount) =>
                 {
                     Log.Debug(byteCount + " bytes send to " + Socket.RemoteEndPoint);
