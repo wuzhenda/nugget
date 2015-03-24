@@ -1,0 +1,45 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>nugget sample 2: chat</title>
+        <script src="jquery-1.5.2.min.js" type="text/javascript"></script>
+	</head>
+	<body>
+        <p>open this file in multiple tabs, to chat</p>
+        <div id="connection-status"></div>
+        <div id="chat-window"></div>
+        
+        <div id="chat-controls">
+            <form>
+                <input type="text" id="chat-msg" />
+                <input type="submit" id="send" value="Send"/>
+            </form>
+        </div>
+
+        <script type="text/javascript">
+            $('#connection-status').append("connecting.....");
+            var ws = new WebSocket('ws://localhost:8181');
+
+                ws.onmessage = function (evt) {
+                    var date = new Date(evt.timeStamp);
+                    var formattedTime = date.getHours() + ':' + date.getMinutes();
+                    $('#chat-window').append('(' + formattedTime + ') ' + evt.data + '<br/>');
+                };
+            
+                ws.onopen = function () {
+                    $('#connection-status').html('connected!');
+                };
+            
+                ws.onclose = function () {
+                    $('#connection-status').html('not connected');
+                }
+
+            $('#send').click(function () {
+                ws.send($('#chat-msg').val());
+                $('#chat-msg').val('');
+                return false;
+            });
+
+        </script>
+	</body>
+</html>
