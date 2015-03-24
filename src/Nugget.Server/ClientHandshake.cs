@@ -99,8 +99,8 @@ namespace Nugget.Server
         {
             var valid = ResourceName != null &&
                 !string.IsNullOrEmpty(Host) &&
-                AdditionalFields["Upgrade"] == "websocket" &&
-                AdditionalFields["Connection"].Contains("Upgrade") &&
+                AdditionalFields["Upgrade"].ToLower() == "websocket" &&
+                AdditionalFields["Connection"].ToLower().Contains("upgrade") &&
                 !string.IsNullOrEmpty(Version) && Version == "13";
 
             return valid;

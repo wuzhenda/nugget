@@ -4,28 +4,30 @@ using System.Linq;
 using System.Text;
 using Nugget;
 using JONSParser;
+using Nugget.Framework;
+using Nugget.Server;
 
 namespace SubProtocol
 {
 
     // the handler class
     // note that the class inherits the generic interface and uses the model as the type parameter
-    class PostSocket : WebSocket<Post>
+    class PostSocket : IWebSocket
     {
         // this method is called when data is comming from the client
         // note that the method takes a Post object instead of a string
         // this is the object created in the model factory
-        public override void Incoming(Post post)
+        public void Incoming(string data)
         {
-            Console.WriteLine("{0} posted {1}", post.Author, post.Body);
+            Console.WriteLine("{0} posted {1}", data);
         }
 
-        public override void Disconnected()
+        public void Disconnected()
         {
             Console.WriteLine("--- disconnected ---");
         }
 
-        public override void Connected(ClientHandshake handshake)
+        public void Connected(ClientHandshake handshake)
         {
             Console.WriteLine("--- connected ---");
         }
@@ -83,14 +85,16 @@ namespace SubProtocol
         static void Main(string[] args)
         {
             // create the server
-            var nugget = new WebSocketServer(8181, "null", "ws://localhost:8181");
+            var nugget = new WebSocketServer("ws://localhost:8181",null);
+
+            var factory = new WebSocketFactory(nugget);
             // register the handler
-            nugget.RegisterHandler<PostSocket>("/subsample");
+            factory.Register<PostSocket>("/subsample");
             // register the model factory
             // this is important since we need the model factory to create the models
             // the string passed is the name of the sub protocol that the factory should be used for
             // any client connecting with this subprotocol, will have all its data send throught the factory
-            nugget.SetSubProtocolModelFactory(new PostFactory(), "post");
+            //nugget.SetSubProtocolModelFactory(new PostFactory(), "post");
             
             // start the server
             nugget.Start();
